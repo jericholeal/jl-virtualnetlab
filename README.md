@@ -1,8 +1,15 @@
 # jl-virtualnetlab
-A fully virtual network lab simulating an enterprise LAN with routing, firewalls, monitoring, and automated backups.
+This repository contains only the configuration files and scripts for my "Virtual Net Lab" setup. It’s intended as a reference showcase, not a full deployable system.
 
-Run on my personal host computer, I tried to keep the resource requirements
+You won’t find full installations, image files, or full project scaffolding here, just the essential configs and automation scripts I’ve written and used in my own setup.
 
+### Why?
+I created this repo to document and showcase key parts for learning & sharing.
+
+### What's included, then?
+- Shell scripts (backups)
+- Sample config files (nftables, dnsmasq, sshd_config, etc.)
+- Setup and learning notes
 
 ## Architecture
 - **Virtualization** QEMU/KVM (Pop_OS! Linux host)
@@ -13,6 +20,8 @@ Run on my personal host computer, I tried to keep the resource requirements
 - **Prometheus & Grafana Monitoring**: node_exporter (Linux), windows_exporter (Windows)
 
 ## VM Inventory
+
+Run on my personal host computer. Tried to keep the resource requirements minimal.
 
 ### admin01
 - Central Workstation
@@ -90,23 +99,19 @@ I wanted to build something to learn, practice, and apply networking and system 
 - SSH hardening
 - Samba for Windows file sharing
 
-### Some Problems I Ran Into:
+### Problems & Learning Experiences:
 
 #### Setting up host bridge
 - Had problems with VMs staying connected to host bridge device
 - Assigned static IP address to bridge device (192.168.100.254/24), and gateways & DNS as 192.168.100.1
 
 #### No internet connectivity from linuxclient01
-- DHCP worked, ping router01 worked, ping google.com didn't work
+- Got DHCP lease, ping router01 worked, ping google.com didn't work
 - router01 didn't have ipv4 forwarding permanently enabled
-- sysctl and sysctl.conf to permanently allow ipv4 port forwarding
+- Permanently allowed ipv4 port forwarding with sysctl and sysctl.conf
 
 #### Initially planned on using iptables
 - Learned about nftables and switched to that
-
-#### Docker compose containers forever restarting
-- Changed Grafana host directory ownership to 472:472
-- Changed Prometheus host directory ownership to 65534:65534
 
 #### Installed Ubuntu Server Minimized (monitor01) with the docker snap
 - Working with the snap was weird, so I uninstalled it and went with docker.io
@@ -115,6 +120,10 @@ I wanted to build something to learn, practice, and apply networking and system 
 - I was using router01 as my central workstation
 - While setting up Grafana, needed a GUI
 - Set up admin01 and set it up as central workstation instead
+
+#### Docker compose containers forever restarting
+- Changed Grafana host directory ownership to 472:472
+- Changed Prometheus host directory ownership to 65534:65534
 
 #### Prometheus as data source for Grafana
 - Initially tried connecting Grafana to Prometheus as a data source at monitor01's IP address at port 9091
@@ -125,4 +134,4 @@ I wanted to build something to learn, practice, and apply networking and system 
 - I had the wrong sharename in smb.conf, so I fixed the name
 
 #### linuxclient01 backups
-- I added a static DHCP lease to linuxclient01 to simplify ssh backups from fileserver01
+- Added a static DHCP lease to linuxclient01 to simplify ssh backups from fileserver01
