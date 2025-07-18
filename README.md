@@ -3,30 +3,34 @@ This repository contains only the configuration files and scripts for my "Virtua
 
 You won’t find full installations, image files, or full project scaffolding here, just the essential configs and automation scripts I’ve written and used in my own setup.
 
-### Why?
+### Why this lab?
+
+I built this to practice networking and system administration in a hands-on way.
+
+### Why this repo?
 I created this repo to document and showcase key parts for learning & sharing.
 
-### What's included, then?
-- Shell scripts (backups)
+### What's included?
+- Bash scripts (backups)
 - Sample config files (nftables, dnsmasq, sshd_config, etc.)
-- Setup and learning notes
+- Setup notes and learning documentation
 
 ## Architecture
 - **Virtualization** QEMU/KVM (Pop_OS! Linux host)
 - **Bridge Interface**: br0 for internal LAN
 - **Firewall**: nftables (default drop, allow-by-policy)
-- **DHCP/DNS**: dnsmasq (router01 VM)
-- **Automated Backups**: anacron, daily file backups
-- **Prometheus & Grafana Monitoring**: node_exporter (Linux), windows_exporter (Windows)
+- **DHCP/DNS**: dnsmasq (on router01)
+- **Automated Backups**: anacron, daily .tar.gz archives
+- **Monitoring**: Prometheus & Grafana (Docker), node_exporter, windows_exporter
 
 ## VM Inventory
 
-Run on my personal host computer. Tried to keep the resource requirements minimal.
+Runs on my personal host. Kept resource usage minimal.
 
 ### admin01
 - Central Workstation
 - Debian 12, XFCE
-- 2 vCPU, 2GB RAM, 10GB disk (qcow2)
+- 2 vCPU, 2GB RAM, 10GB disk
 
 ### router01
 - Gateway, DHCP/DNS
@@ -35,103 +39,96 @@ Run on my personal host computer. Tried to keep the resource requirements minima
 
 ### fileserver01
 - NFS/SMB Host, File Sharing
-- Ubuntu Server Minimized
+- Ubuntu Server (Minimized)
 - 1 vCPU, 1GB RAM, 10GB disk
 
 ### monitor01
-- Monitoring, Prometheus & Grafana
-- Ubuntu Server Minimized
+- Prometheus & Grafana stack
+- Ubuntu Server (Minimized)
 - 2 vCPU, 2GB RAM, 15GB disk
 
 ### linuxclient01
-- Linux Client VM
 - AlmaLinux 10 Minimal (no GUI)
 - 2 vCPU, 1536MB RAM, 8GB disk
 
 ### windowsclient01
-- Windows Client VM
 - Windows 10
 - 2 vCPU, 4GB RAM, 80GB disk
 
-### General Rules (nftables)
-- All input/forward chains use default drop
-- SSH to all VMs from admin01
-- Traffic allowed as needed by role
-
-### Networking
+### Networking & Firewall
 - Subnet: 192.168.100.0/24
 - Gateway: 192.168.100.1 (router01)
-- DHCP Range: 192.168.100.10 - 192.168.100.100 (12h)
-- DHCP Leases (static): linuxclient01 (.101), windowsclient01 (.102)
+- DHCP Range: 192.168.100.10 - 100 (12h lease)
+- Static Leases: linuxclient01 (.101), windowsclient01 (.102)
+- Firewall: default drop all, allow by role (e.g. SSH from admin01)
 
 ### File Sharing
-- NFS (fileserver01), /srv/nfsshare, mounted on linuxclient01 at /mnt/nfsshare
-- Samba (fileserver01), /srv/smbshare, mapped network drive at :Z on windowsclient01
+- NFS (fileserver01): /srv/nfsshare, mounted at /mnt/nfsshare on linuxclient01
+- Samba (fileserver01): /srv/smbshare, mapped as :Z on windowsclient01
 
 ### Backups
-- Backup scripts with anacron on fileserver01
-- Compressed .tar.gz format
-- Timestamped archives and logging
+- Scripts on fileserver01 scheduled with anacron
+- .tar.gz archives, timestamped
+- Stored locally, logs written to /var/log/backups
 
 ### Monitoring
-- Prometheus & Grafana containerized with Docker
-- Prometheus exposed on host port 9091, Grafana on 3000
-- node_exporter installed on Linux VMs (port 9100), windows_exporter installed on windowsclient01 (port 9182)
+- Prometheus & Grafana containerized on monitor01
+- Ports: Prometheus 9091, Grafana 3000
+- node_exporter on Linux VMs (9100)
+- windows_exporter on Windows (9182)
 
-### Future Improvements, Taking It Further
-- Expand Grafana dashboards with alerts, retention tuning
-- VPN access, remote management
-- Software-based printer for network printer simulation
-- Ansible playbooks for setup
-- Dedicated backup server or cloud backups (e.g. Amazon S3)
-- LDAP server
+### Future Improvements
+- Grafana alerts, dashboard tuning
+- VPN access, remote lab control
+- Simulated network printer
+- Ansible playbooks for automation
+- Dedicated backup VM or cloud backups (e.g. S3)
+- Central LDAP authentication
 
-### Why did I do this project, anyway?
-
-I wanted to build something to learn, practice, and apply networking and system administration skills and knowledge.
-
-### Key Areas of Learning & Experience:
-- Subnetting
-- dnsmasq.conf, DHCP, leases
-- nftables.conf, rule setting
-- Prometheus & Grafana, node_exporter/windows_exporter
-- Key ports
-- SSH hardening
-- Samba for Windows file sharing
+### Key Learning Areas:
+- Subnetting & DHCP leases with dnsmasq
+- nftables rulesets
+- Secure SSH config
+- Using Prometheus & Grafana
+- Using Docker
+- Filesharing with NFS and Samba
+- Bash scripting for backup automation
+- Troubleshooting networking
 
 ### Problems & Learning Experiences:
 
-#### Setting up host bridge
-- Had problems with VMs staying connected to host bridge device
-- Assigned static IP address to bridge device (192.168.100.254/24), and gateways & DNS as 192.168.100.1
+#### Host bridge issues
+- VMs not connecting properly
+- Fixed by assigning 192.168.100.254/24 to bridge device and 192.168.100.1 as gateway & DNS
 
-#### No internet connectivity from linuxclient01
-- Got DHCP lease, ping router01 worked, ping google.com didn't work
-- router01 didn't have ipv4 forwarding permanently enabled
-- Permanently allowed ipv4 port forwarding with sysctl and sysctl.conf
+#### No internet on linuxclient01
+- DHCP workd, router01 pinged, but no external access
+- Port forwarding wasn't permanently enabled on router01 (missing net.ipv4.ip_forward = 1 in sysctl.conf)
 
-#### Initially planned on using iptables
-- Learned about nftables and switched to that
+#### Switched from iptables to nftables
+- Learned nftables is the modern replacement, switched to it
+- Cleaner and better design
 
-#### Installed Ubuntu Server Minimized (monitor01) with the docker snap
-- Working with the snap was weird, so I uninstalled it and went with docker.io
+#### Docker snap was weird
+- Initial install of Docker via snap on monitor01 had issues
+- Replaced with docker.io from apt
 
 #### I actually created admin01 later
-- I was using router01 as my central workstation
-- While setting up Grafana, needed a GUI
-- Set up admin01 and set it up as central workstation instead
+- Originally using router01 as my central workstation
+- Set up admin01 as central GUI workstation instead
 
-#### Docker compose containers forever restarting
-- Changed Grafana host directory ownership to 472:472
-- Changed Prometheus host directory ownership to 65534:65534
+#### Docker containers stuck restarting
+- Fixed by setting correct volume directory permissions
+- Grafana: 472:472
+- Prometheus: 65534:65534
 
-#### Prometheus as data source for Grafana
+#### Prometheus not reachable from Grafana
 - Initially tried connecting Grafana to Prometheus as a data source at monitor01's IP address at port 9091
-- Learned that since Grafana & Prometheus are in the same container stack, need to simply add the prometheus path instead
+- Realized Grafana & Prometheus run in the same Docker network, used internal path instead of host IP and port
 
 #### Trouble accessing smbshare on fileserver01 from windowsclient01
-- ping was OK, but \\fileserver01\smbshare wasn't accessible
-- I had the wrong sharename in smb.conf, so I fixed the name
+- fileserver01 pinged, but \\fileserver01\smbshare mounting failed
+- Found sharename typo in smb.conf, fixed it
 
-#### linuxclient01 backups
-- Added a static DHCP lease to linuxclient01 to simplify ssh backups from fileserver01
+#### linuxclient01 backups problems
+- Added a static DHCP lease to linuxclient01 to ensure consistent IP for SSH-based backups
