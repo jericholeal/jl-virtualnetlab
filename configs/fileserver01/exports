@@ -1,0 +1,7 @@
+/srv/nfsshare 192.168.100.0/24(rw,sync,no_subtree_check,root_squash)
+
+# only devices on LAN subnet can connect
+# rw = read/write
+# sync = write changes immediately
+# no_subtree_check = speed things up, avoid subtree validation
+# root_squash = doesn't let root client act as root on server

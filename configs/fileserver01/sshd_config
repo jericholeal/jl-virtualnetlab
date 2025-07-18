@@ -1,0 +1,23 @@
+# I've included key uncommented lines only
+
+Include /etc/ssh/sshd_config.d/*.conf # default
+
+Port 22
+AllowUsers fsadmin # superuser of fileserver01
+
+LoginGraceTime 2m
+PermitRootLogin no
+MaxAuthTries 3
+MaxSessions 2
+
+PasswordAuthentication no
+PermitEmptyPasswords no
+
+KbdInteractiveAuthentication no
+UsePAM no
+X11Forwarding no
+PrintMotd no
+
+Subsystem   sftp    /usr/lib/openssh/sftp-server # default
+
+

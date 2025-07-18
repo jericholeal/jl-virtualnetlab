@@ -1,0 +1,10 @@
+127.0.0.1   localhost
+127.0.0.1   admin01.officenet.lab   admin01
+
+192.168.100.1   router01
+192.168.100.2   fileserver01
+192.168.100.3   monitor01
+192.168.100.4   admin01
+
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters

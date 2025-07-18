@@ -1,0 +1,21 @@
+# I've included key uncommented lines only
+
+Include /etc/ssh/sshd_config.d/*.conf
+
+Port 2222
+AllowUsers netadmin # superuser of router01
+
+LoginGraceTime 2m
+PermitRootLogin no
+MaxAuthTries 3
+MaxSessions 2
+
+PasswordAuthentication no
+PermitEmptyPasswords no
+
+KbdInteractiveAuthentication no
+UsePam no
+X11Forwarding no
+PrintMotd no
+
+Subsystem   sftp    /usr/lib/openssh/sftp-server # default
