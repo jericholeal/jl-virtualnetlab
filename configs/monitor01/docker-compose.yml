@@ -1,0 +1,26 @@
+---
+version: "3.8"
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus-data:/prometheus # prometheus-data nobody:nogroup host ownership
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - "9091:9090"
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    depends_on:
+      - prometheus
+    volumes:
+      - ./grafana-data:/var/lib/grafana # grafana-data 472:472 host ownership
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=<PASSWORD_HERE>
+    restart: unless-stopped

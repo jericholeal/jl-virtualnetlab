@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  
+  - job_name: 'node_exporters'
+    static_configs:
+      - targets:
+        - '192.168.100.1:9100' # router01
+        - '192.168.100.2:9100' # fileserver01        
+        - '192.168.100.3:9100' # monitor01
+        - '192.168.100.4:9100' # admin01        
+        - '192.168.100.101:9100' # linuxclient01
+
+  - job_name: 'windows_exporter'
+    static_configs:
+      - targets:
+        - '192.168.100.102:9182' # windowsclient01
