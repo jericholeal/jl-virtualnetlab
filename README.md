@@ -123,3 +123,6 @@ I wanted to build something to learn, practice, and apply networking and system 
 #### Trouble accessing smbshare on fileserver01 from windowsclient01
 - ping was OK, but \\fileserver01\smbshare wasn't accessible
 - I had the wrong sharename in smb.conf, so I fixed the name
+
+#### linuxclient01 backups
+- I added a static DHCP lease to linuxclient01 to simplify ssh backups from fileserver01
