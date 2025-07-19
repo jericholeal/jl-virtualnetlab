@@ -102,14 +102,14 @@ Runs on my personal host. Kept resource usage minimal.
 - Fixed by assigning 192.168.100.254/24 to bridge device and 192.168.100.1 as gateway & DNS
 
 #### No internet on linuxclient01
-- DHCP workd, router01 pinged, but no external access
+- DHCP worked, router01 pinged, but no external access
 - Port forwarding wasn't permanently enabled on router01 (missing net.ipv4.ip_forward = 1 in sysctl.conf)
 
 #### Switched from iptables to nftables
 - Learned nftables is the modern replacement, switched to it
 - Cleaner and better design
 
-#### Docker snap was weird
+#### Docker snap weirdness
 - Initial install of Docker via snap on monitor01 had issues
 - Replaced with docker.io from apt
 
@@ -127,8 +127,12 @@ Runs on my personal host. Kept resource usage minimal.
 - Realized Grafana & Prometheus run in the same Docker network, used internal path instead of host IP and port
 
 #### Trouble accessing smbshare on fileserver01 from windowsclient01
-- fileserver01 pinged, but \\fileserver01\smbshare mounting failed
+- fileserver01 pinged, but \\fileserver01\smbshare network drive mapping failed
 - Found sharename typo in smb.conf, fixed it
 
 #### linuxclient01 backups problems
 - Added a static DHCP lease to linuxclient01 to ensure consistent IP for SSH-based backups
+
+## License
+This portfolio piece is shared publicly to showcase my work.
+Please do not copy, reuse, or redistribute any content without explicit permission.
